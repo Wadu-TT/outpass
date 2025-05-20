@@ -1,20 +1,35 @@
+// backend/server.js
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const { connectDB } = require('./config/db');
+const seedDatabase = require('./config/seedData');
 
+// Load environment variables
 dotenv.config();
 
-const app = express();  
+// Initialize express app
+const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log('MongoDB connected'))  
-.catch(err => console.error('MongoDB connection error:', err));
 
+connectDB().then(() => {
+  if (process.env.NODE_ENV === 'development') {
+    seedDatabase();
+  }
+});
+
+
+const outpassRoutes = require('./routes/outpassRoutes');
+const authRoutes = require('./routes/authRoutes');
+
+// Use routes
 app.use('/api', outpassRoutes);
 app.use('/api/auth', authRoutes);
 
+// Basic route
 app.get('/', (req, res) => {
   res.send('Digital Outpass API is running');
 });
