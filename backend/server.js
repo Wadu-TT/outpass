@@ -1,14 +1,14 @@
-// backend/server.js
+
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const { connectDB } = require('./config/db');
 const seedDatabase = require('./config/seedData');
 
-// Load environment variables
+
 dotenv.config();
 
-// Initialize express app
+
 const app = express();
 
 // Middleware
