@@ -22,12 +22,12 @@ connectDB().then(() => {
 });
 
 
-const outpassRoutes = require('./routes/outpassRoutes');
-const authRoutes = require('./routes/authRoutes');
+const outpassRoutes = require('./routes/aurRoutes');
+// const authRoutes = require('./routes/authRoutes');
 
 // Use routes
 app.use('/api', outpassRoutes);
-app.use('/api/auth', authRoutes);
+// app.use('/api/auth', authRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

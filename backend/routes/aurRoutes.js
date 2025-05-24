@@ -9,22 +9,30 @@ const { User, Student } = require('../models');
 router.post('/student/login', async (req, res) => {
   try {
     const { rollNumber, email } = req.body;
-    
-    // In a real app, you'd check the password too
+
     const student = await Student.findOne({
       $or: [{ rollNumber }, { email }]
     });
-    
+
     if (!student) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-    
+
     const token = jwt.sign(
       { id: student._id, type: 'student' },
       process.env.JWT_SECRET || 'your-default-secret',
       { expiresIn: '1d' }
     );
-    
+
+    const qrPayload = {
+      id: student._id,
+      rollNumber: student.rollNumber,
+      name: student.name,
+      token
+    };
+
+    const qrCodeDataURL = await QRCode.toDataURL(JSON.stringify(qrPayload));
+
     res.json({
       token,
       user: {
@@ -33,7 +41,8 @@ router.post('/student/login', async (req, res) => {
         email: student.email,
         rollNumber: student.rollNumber,
         type: 'student'
-      }
+      },
+      qrCode: qrCodeDataURL // <- Base64-encoded QR image
     });
   } catch (error) {
     console.error(error);
